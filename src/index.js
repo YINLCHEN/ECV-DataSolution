@@ -6,6 +6,12 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import LoginPage from './components/LoginPage/App';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
+import reducer from './reducers'
+import { createStore } from 'redux'
+import { Provider } from 'react-redux';
+
+const store = createStore(reducer)
+
 const theme = createMuiTheme({
     typography: {
         fontFamily: "\"Microsoft JhengHei\",\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
@@ -18,9 +24,12 @@ const theme = createMuiTheme({
 });
 
 ReactDOM.render(
-    <Router>
-        <MuiThemeProvider theme={theme}>
-            <LoginPage />
-        </MuiThemeProvider>
-    </Router>, document.getElementById('root'));
+    <Provider store={store}>
+        <Router>
+            <MuiThemeProvider theme={theme}>
+                <LoginPage />
+            </MuiThemeProvider>
+        </Router>
+    </Provider>
+    , document.getElementById('root'));
 registerServiceWorker();

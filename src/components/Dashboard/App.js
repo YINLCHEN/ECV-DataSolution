@@ -12,8 +12,12 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
 import Dropzone from 'react-dropzone'
+import { connect } from 'react-redux';
+import { compose } from "recompose";
 
-// import CustomizedTabs from './CustomizedTabs';
+import Snackbar from '../Common/SnackbarComponent';
+import LinearBuffer from '../Common/LinearBuffer';
+import CustomizedTabs from './CustomizedTabs';
 import TableauDashboard from './TableauDashboard';
 
 const styles = theme => ({
@@ -59,7 +63,7 @@ const styles = theme => ({
 
 const baseStyle = {
     position: 'absolute',
-    top: '50%',
+    top: '40%',
     left: '50%',
     margin: '-200px 0 0 -300px',
     height: 400,
@@ -84,13 +88,33 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            open: false,
             openTableau: false,
             openProgress: false,
-            tabsValue: 0,
             dashboard: 0
         };
 
         this.handleTabsChange = this.handleTabsChange.bind(this);
+        this.onCompletedLinearBuffer = this.onCompletedLinearBuffer.bind(this);
+    }
+
+    componentWillReceiveProps(nextProp) {
+        if (nextProp.fileName) {
+            if (nextProp.fileName.length !== 0 && nextProp.fileName === 'Superstore.csv') {
+                this.setState({
+                    openProgress: true,
+
+                    openTableau: false
+                })
+            }
+            else {
+                this.setState({ open: true, });
+
+                setTimeout(() => {
+                    this.setState({ open: false, });
+                }, 3000);
+            }
+        }
     }
 
     _handleFileChange(e) {
@@ -104,7 +128,6 @@ class App extends Component {
         }
 
         reader.onloadend = () => {
-
             const csv = reader.result;
             const lines = csv.split("\n");
 
@@ -139,22 +162,23 @@ class App extends Component {
 
     handleTabsChange(value) {
         this.setState({
-            tabsValue: value
+            dashboard: value
         })
     }
 
     onDrop = (acceptedFiles, rejectedFiles) => {
-        if (acceptedFiles) {
+        if (acceptedFiles.length !== 0 && acceptedFiles[0].name === 'Superstore.csv') {
             this.setState({
-                openProgress: true
+                openProgress: true,
+                openTableau: false
             })
+        }
+        else {
+            this.setState({ open: true, });
 
-            setTimeout(function () { //Start the timer
-                this.setState({
-                    openProgress: false,
-                    openTableau: true
-                })
-            }.bind(this), 3000)
+            setTimeout(() => {
+                this.setState({ open: false, });
+            }, 3000);
         }
     }
 
@@ -162,19 +186,28 @@ class App extends Component {
         this.setState({ [event.target.name]: event.target.value });
     };
 
+    onCompletedLinearBuffer() {
+        this.setState({
+            openProgress: false,
+            openTableau: true
+        })
+    }
+
     render() {
         const { classes } = this.props;
 
         return (
-            <div style={{ height: '100vh' }} >
+            <div style={{ height: '110vh' }} >
                 <Dialog open={this.state.openProgress}>
                     <Paper className={classes.root} elevation={1}>
                         <CircularProgress className={classes.progress} color="secondary" />
+                        <div style={{height:"40vh"}} ></div>
+                        <LinearBuffer onCompleted={this.onCompletedLinearBuffer} />
                     </Paper>
                 </Dialog>
 
                 <div className={classes.Content}>
-                    <FormControl className={classes.formControl}>
+                    {/* <FormControl className={classes.formControl}>
                         <InputLabel htmlFor="dashboard">Dashboard</InputLabel>
                         <Select
                             value={this.state.dashboard}
@@ -187,17 +220,25 @@ class App extends Component {
                             <MenuItem value="">
                                 <em>None</em>
                             </MenuItem>
-                            <MenuItem value={0}>Executive Dashboard</MenuItem>
-                            <MenuItem value={1}>Daily Store Performance</MenuItem>
-                            <MenuItem value={2}>Market Basket Analysis</MenuItem>
+                            <MenuItem value={0}>Overview</MenuItem>
+                            <MenuItem value={1}>Product</MenuItem>
+                            <MenuItem value={2}>Customers</MenuItem>
+                            <MenuItem value={3}>Shipping</MenuItem>
+                            <MenuItem value={4}>Performance</MenuItem>
+                            <MenuItem value={5}>Commission Model</MenuItem>
+                            <MenuItem value={6}>Order Details</MenuItem>
+                            <MenuItem value={7}>Forecast</MenuItem>
+                            <MenuItem value={8}>What if Forecast</MenuItem>
                         </Select>
-                    </FormControl>
-                    {/* <CustomizedTabs handleTabsChange={this.handleTabsChange} /> */}
+                    </FormControl> */}
+                    <CustomizedTabs handleTabsChange={this.handleTabsChange} />
                 </div>
+
+                <Snackbar open={this.state.open} message={'Please upload a CSV file named Superstore.csv'} />
 
                 {!this.state.openTableau || this.state.dashboard === ''
                     ?
-                    <Dropzone accept="*.csv" onDrop={this.onDrop}>
+                    <Dropzone accept=".csv" onDrop={this.onDrop}>
                         {({ getRootProps, getInputProps, isDragActive, isDragReject, }) => {
                             let styles = { ...baseStyle }
                             styles = isDragActive ? { ...styles, ...activeStyle } : styles
@@ -223,11 +264,16 @@ class App extends Component {
                         }}
                     </Dropzone>
                     :
-                    <div>
+                    <div style={{ margin: '10px' }}>
                         {this.state.dashboard === 0 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
                         {this.state.dashboard === 1 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
                         {this.state.dashboard === 2 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
                         {this.state.dashboard === 3 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
+                        {this.state.dashboard === 4 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
+                        {this.state.dashboard === 5 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
+                        {this.state.dashboard === 6 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
+                        {this.state.dashboard === 7 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
+                        {this.state.dashboard === 8 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
                     </div>
                 }
             </div>
@@ -235,8 +281,15 @@ class App extends Component {
     }
 }
 
+function mapStateToProps(state) {
+    return {
+        count: state.count,
+        fileName: state.fileName
+    };
+}
+
 App.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(App);
+export default compose(connect(mapStateToProps), withStyles(styles, { withTheme: true }))(App);

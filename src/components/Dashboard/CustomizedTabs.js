@@ -74,21 +74,53 @@ class CustomizedTabs extends React.Component {
                     value={value}
                     onChange={this.handleChange}
                     classes={{ root: classes.tabsRoot, indicator: classes.tabsIndicator }}
+                    scrollable
+                    scrollButtons="auto"
                 >
                     <Tab
                         disableRipple
                         classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
-                        label="Executive Dashboard"
+                        label="Overview"
                     />
                     <Tab
                         disableRipple
                         classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
-                        label="Daily Store Performance"
+                        label="Product"
                     />
                     <Tab
                         disableRipple
                         classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
-                        label="Market Basket Analysis"
+                        label="Customers"
+                    />
+                    <Tab
+                        disableRipple
+                        classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
+                        label="Shipping"
+                    />
+                    <Tab
+                        disableRipple
+                        classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
+                        label="Performance"
+                    />
+                    <Tab
+                        disableRipple
+                        classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
+                        label="Commission Model"
+                    />
+                    <Tab
+                        disableRipple
+                        classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
+                        label="Order Details"
+                    />
+                    <Tab
+                        disableRipple
+                        classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
+                        label="Forecast"
+                    />
+                    <Tab
+                        disableRipple
+                        classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
+                        label="What if Forecast"
                     />
                 </Tabs>
             </div>

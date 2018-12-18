@@ -8,7 +8,6 @@ const styles = theme => ({
 });
 
 class TableauDashboard extends Component {
-
     initViz(index) {
         var vizUrl = '';
         switch (index) {
@@ -16,10 +15,28 @@ class TableauDashboard extends Component {
                 vizUrl = 'https://public.tableau.com/views/US_Superstore_10_0/Overview?:embed=y&:loadOrderID=0&:display_count=yes';
                 break;
             case 1:
-                vizUrl = 'https://public.tableau.com/views/sales_192/Dashboard12?:embed=y&:display_count=yes'
+                vizUrl = 'https://public.tableau.com/views/US_Superstore_10_0/Product?:embed=y&:loadOrderID=0&:display_count=yes'
                 break;
             case 2:
-                vizUrl = 'https://public.tableau.com/views/Sales_568/Dashboard1?:embed=y&:display_count=yes';
+                vizUrl = 'https://public.tableau.com/views/US_Superstore_10_0/Customers?:embed=y&:loadOrderID=0&:display_count=yes';
+                break;
+            case 3:
+                vizUrl = 'https://public.tableau.com/views/US_Superstore_10_0/Shipping?:embed=y&:loadOrderID=0&:display_count=yes';
+                break;
+            case 4:
+                vizUrl = 'https://public.tableau.com/views/US_Superstore_10_0/Performance?:embed=y&:loadOrderID=0&:display_count=yes';
+                break;
+            case 5:
+                vizUrl = 'https://public.tableau.com/views/US_Superstore_10_0/CommissionModel?:embed=y&:loadOrderID=0&:display_count=yes';
+                break;
+            case 6:
+                vizUrl = 'https://public.tableau.com/views/US_Superstore_10_0/OrderDetails?:embed=y&:loadOrderID=0&:display_count=yes';
+                break;
+            case 7:
+                vizUrl = 'https://public.tableau.com/views/US_Superstore_10_0/Forecast?:embed=y&:loadOrderID=0&:display_count=yes';
+                break;
+            case 8:
+                vizUrl = 'https://public.tableau.com/views/US_Superstore_10_0/WhatIfForecast?:embed=y&:loadOrderID=0&:display_count=yes';
                 break;
             default:
                 vizUrl = 'https://public.tableau.com/views/US_Superstore_10_0/Overview?:embed=y&:loadOrderID=0&:display_count=yes';

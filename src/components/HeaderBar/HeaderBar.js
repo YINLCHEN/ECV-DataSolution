@@ -12,7 +12,11 @@ import Hidden from '@material-ui/core/Hidden';
 import Divider from '@material-ui/core/Divider';
 import MenuIcon from '@material-ui/icons/Menu';
 import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
+import { connect } from 'react-redux';
+import { compose } from "recompose";
 import { ListItems } from './titleData';
 
 const drawerWidth = 220;
@@ -62,6 +66,7 @@ class HeaderBar extends React.Component {
         };
 
         this.handleLogout = this.handleLogout.bind(this);
+        this._handleFileChange = this._handleFileChange.bind(this);
     }
 
     handleDrawerToggle = () => {
@@ -75,6 +80,36 @@ class HeaderBar extends React.Component {
     handleLogout() {
         this.props.handleLogout()
     }
+
+    _handleFileChange(e) {
+        e.preventDefault();
+
+        let reader = new FileReader()
+        let file = e.target.files[0];
+
+        if (file != null) {
+            reader.readAsText(file)
+        }
+
+        reader.onloadend = () => {
+
+            const csv = reader.result;
+            const lines = csv.split("\n");
+
+            let dataArray = [];
+            for (let i = 0; i < lines.length; i++) {
+                const row = lines[i].split("\n")
+                row.map(j => {
+                    dataArray.push(j.split(","))
+                    return null
+                })
+            }
+
+            this.props.dispatch({ type: 'INCREMENT', fileName: file.name });
+        }
+    }
+
+    triggerInputFile = () => this.fileInput.click()
 
     render() {
         const { classes, theme } = this.props;
@@ -104,10 +139,30 @@ class HeaderBar extends React.Component {
                         <img src={require('../../images/elogo.png')} style={{ height: '40px' }} alt="eLogo" />
 
                         <Hidden smDown>
-                            <div style={{ color: '#ffffff' ,marginLeft: '20px',}}>eCloudValley x Data Solution System</div>
+                            <div style={{ color: '#ffffff', marginLeft: '20px', }}>eCloudValley x Data Solution System</div>
                         </Hidden>
 
                         <Typography className={classes.flex} />
+
+                        <label htmlFor="outlined-button-file">
+                            <IconButton style={{color:"#FFFFFF"}} aria-label="Delete" className={classes.margin} onClick={this.triggerInputFile}>
+                                <Tooltip title="Upload CSV">
+                                    <CloudUploadIcon />
+                                </Tooltip>
+                            </IconButton>
+                        </label>
+                        <input
+                            accept=".csv"
+                            style={{ display: 'none' }}
+                            id="outlined-button-file"
+                            type="file"
+                            onChange={(e) => this._handleFileChange(e)}
+                            onClick={(event) => {
+                                event.target.value = null
+                            }}
+                            ref={fileInput => this.fileInput = fileInput} 
+                        />
+
                         <Button style={{ width: '40px', marginLeft: '20px', color: '#FFFFFF', border: '2px solid #4CAF50', textTransform: 'none', }} onClick={this.handleLogout}>
                             Logout
                         </Button>
@@ -136,9 +191,15 @@ class HeaderBar extends React.Component {
     }
 }
 
+function mapStateToProps(state) {
+    return {
+        count: state.count
+    };
+}
+
 HeaderBar.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(HeaderBar);
+export default compose(connect(mapStateToProps), withStyles(styles, { withTheme: true }))(HeaderBar);
