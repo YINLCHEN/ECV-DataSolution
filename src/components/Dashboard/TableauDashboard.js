@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import tableau from "tableau-api";
+import "tableau-api";
 
 const styles = theme => ({
 
@@ -47,8 +47,8 @@ class TableauDashboard extends Component {
 
         var options = {
             hideTabs: true,
-            width: '100%',
-            height: '100vh',
+            width: window.innerWidth - 50,
+            height: window.innerHeight - 20,
             usePublishedSize: true,
             hideToolbar: true,
             onFirstInteractive: function () {
@@ -56,7 +56,7 @@ class TableauDashboard extends Component {
             }
         };
 
-        let viz = new window.tableau.Viz(vizContainer, vizUrl, options)
+        new window.tableau.Viz(vizContainer, vizUrl, options)
     }
 
     componentDidMount() {

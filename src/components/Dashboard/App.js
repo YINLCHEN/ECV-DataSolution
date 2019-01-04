@@ -1,22 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Dialog from '@material-ui/core/Dialog';
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import Hidden from '@material-ui/core/Hidden';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
 
-import Dropzone from 'react-dropzone'
 import { connect } from 'react-redux';
 import { compose } from "recompose";
 
 import Snackbar from '../Common/SnackbarComponent';
-import LinearBuffer from '../Common/LinearBuffer';
 import CustomizedTabs from './CustomizedTabs';
 import TableauDashboard from './TableauDashboard';
 
@@ -61,29 +59,6 @@ const styles = theme => ({
     },
 });
 
-const baseStyle = {
-    position: 'absolute',
-    top: '40%',
-    left: '50%',
-    margin: '-200px 0 0 -300px',
-    height: 400,
-    width: 600,
-    borderWidth: 2,
-    borderColor: '#666',
-    borderStyle: 'dashed',
-    borderRadius: 5
-};
-const activeStyle = {
-    borderStyle: 'solid',
-    borderColor: '#6c6',
-    backgroundColor: '#eee'
-};
-const rejectStyle = {
-    borderStyle: 'solid',
-    borderColor: '#c66',
-    backgroundColor: '#eee'
-};
-
 class App extends Component {
     constructor(props) {
         super(props);
@@ -95,67 +70,29 @@ class App extends Component {
         };
 
         this.handleTabsChange = this.handleTabsChange.bind(this);
-        this.onCompletedLinearBuffer = this.onCompletedLinearBuffer.bind(this);
     }
 
     componentWillReceiveProps(nextProp) {
         if (nextProp.fileName) {
-            if (nextProp.fileName.length !== 0 && nextProp.fileName === 'Superstore.csv') {
+            if (nextProp.fileName.length !== 0 && (nextProp.fileName === 'Superstore.csv' || nextProp.fileName === 'Superstore.xlsx')) {
                 this.setState({
                     openProgress: true,
-
                     openTableau: false
                 })
+
+                setTimeout(() => {
+                    this.setState({
+                        openProgress: false,
+                        openTableau: true
+                    });
+                }, 5000);
             }
             else {
-                this.setState({ open: true, });
+                this.setState({ open: true });
 
                 setTimeout(() => {
                     this.setState({ open: false, });
                 }, 3000);
-            }
-        }
-    }
-
-    _handleFileChange(e) {
-        e.preventDefault();
-
-        let reader = new FileReader()
-        let file = e.target.files[0];
-
-        if (file != null) {
-            reader.readAsText(file)
-        }
-
-        reader.onloadend = () => {
-            const csv = reader.result;
-            const lines = csv.split("\n");
-
-            let dataArray = [];
-            for (let i = 0; i < lines.length; i++) {
-                const row = lines[i].split("\n")
-                row.map(j => {
-                    dataArray.push(j.split(","))
-                    return null
-                })
-            }
-
-            let jsonArray = [];
-            for (let i = 1; i < dataArray.length; i++) {
-                let json = {
-                    "id": i,
-                    "0": dataArray[i][0],
-                    "1": dataArray[i][1],
-                    "2": dataArray[i][2],
-                    "3": dataArray[i][3],
-                    "4": dataArray[i][4],
-                    "5": dataArray[i][5],
-                    "6": dataArray[i][6],
-                    "7": dataArray[i][7],
-                    "8": dataArray[i][8],
-                    "9": dataArray[i][9]
-                }
-                jsonArray.push(json);
             }
         }
     }
@@ -166,32 +103,9 @@ class App extends Component {
         })
     }
 
-    onDrop = (acceptedFiles, rejectedFiles) => {
-        if (acceptedFiles.length !== 0 && acceptedFiles[0].name === 'Superstore.csv') {
-            this.setState({
-                openProgress: true,
-                openTableau: false
-            })
-        }
-        else {
-            this.setState({ open: true, });
-
-            setTimeout(() => {
-                this.setState({ open: false, });
-            }, 3000);
-        }
-    }
-
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
     };
-
-    onCompletedLinearBuffer() {
-        this.setState({
-            openProgress: false,
-            openTableau: true
-        })
-    }
 
     render() {
         const { classes } = this.props;
@@ -201,80 +115,68 @@ class App extends Component {
                 <Dialog open={this.state.openProgress}>
                     <Paper className={classes.root} elevation={1}>
                         <CircularProgress className={classes.progress} color="secondary" />
-                        <div style={{height:"40vh"}} ></div>
-                        <LinearBuffer onCompleted={this.onCompletedLinearBuffer} />
                     </Paper>
                 </Dialog>
 
                 <div className={classes.Content}>
-                    {/* <FormControl className={classes.formControl}>
-                        <InputLabel htmlFor="dashboard">Dashboard</InputLabel>
-                        <Select
-                            value={this.state.dashboard}
-                            onChange={this.handleChange}
-                            inputProps={{
-                                name: 'dashboard',
-                                id: 'dashboard',
-                            }}
-                        >
-                            <MenuItem value="">
-                                <em>None</em>
-                            </MenuItem>
-                            <MenuItem value={0}>Overview</MenuItem>
-                            <MenuItem value={1}>Product</MenuItem>
-                            <MenuItem value={2}>Customers</MenuItem>
-                            <MenuItem value={3}>Shipping</MenuItem>
-                            <MenuItem value={4}>Performance</MenuItem>
-                            <MenuItem value={5}>Commission Model</MenuItem>
-                            <MenuItem value={6}>Order Details</MenuItem>
-                            <MenuItem value={7}>Forecast</MenuItem>
-                            <MenuItem value={8}>What if Forecast</MenuItem>
-                        </Select>
-                    </FormControl> */}
-                    <CustomizedTabs handleTabsChange={this.handleTabsChange} />
+                    <Hidden lgUp>
+                        <FormControl className={classes.formControl}>
+                            <InputLabel htmlFor="dashboard">Dashboard</InputLabel>
+                            <Select
+                                value={this.state.dashboard}
+                                onChange={this.handleChange}
+                                inputProps={{
+                                    name: 'dashboard',
+                                    id: 'dashboard',
+                                }}
+                            >
+                                <MenuItem value="">
+                                    <em>None</em>
+                                </MenuItem>
+                                <MenuItem value={0}>Overview</MenuItem>
+                                <MenuItem value={1}>Product</MenuItem>
+                                <MenuItem value={2}>Customers</MenuItem>
+                                <MenuItem value={3}>Shipping</MenuItem>
+                                <MenuItem value={4}>Performance</MenuItem>
+                                <MenuItem value={5}>Commission Model</MenuItem>
+                                <MenuItem value={6}>Order Details</MenuItem>
+                                <MenuItem value={7}>Forecast</MenuItem>
+                                <MenuItem value={8}>What if Forecast</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Hidden>
+                    <Hidden mdDown>
+                        <CustomizedTabs handleTabsChange={this.handleTabsChange} />
+                    </Hidden>
                 </div>
 
-                <Snackbar open={this.state.open} message={'Please upload a CSV file named Superstore.csv'} />
+                <Snackbar open={this.state.open} message={'Please upload a CSV file named Superstore.csv or Superstore.xlsx'} />
 
-                {!this.state.openTableau || this.state.dashboard === ''
+                <div style={{ margin: '10px' }}>
+                    {this.state.dashboard === 0 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
+                    {this.state.dashboard === 1 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
+                    {this.state.dashboard === 2 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
+                    {this.state.dashboard === 3 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
+                    {this.state.dashboard === 4 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
+                    {this.state.dashboard === 5 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
+                </div>
+
+                {this.state.openTableau
                     ?
-                    <Dropzone accept=".csv" onDrop={this.onDrop}>
-                        {({ getRootProps, getInputProps, isDragActive, isDragReject, }) => {
-                            let styles = { ...baseStyle }
-                            styles = isDragActive ? { ...styles, ...activeStyle } : styles
-                            styles = isDragReject ? { ...styles, ...rejectStyle } : styles
-
-                            return (
-                                <div
-                                    {...getRootProps()}
-                                    style={styles}
-                                    className={classNames('dropzone', { 'dropzone--isActive': isDragActive })}
-                                >
-                                    <input {...getInputProps()} />
-                                    {
-                                        isDragActive ?
-                                            <p>Drop files here...</p> :
-                                            <div>
-                                                <img alt="img" src={require('../../images/upload.png')} className={classes.uploadImg} />
-                                                <div className={classes.tips} >Drag & Drop files here</div>
-                                            </div>
-                                    }
-                                </div>
-                            )
-                        }}
-                    </Dropzone>
-                    :
                     <div style={{ margin: '10px' }}>
-                        {this.state.dashboard === 0 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
-                        {this.state.dashboard === 1 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
-                        {this.state.dashboard === 2 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
-                        {this.state.dashboard === 3 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
-                        {this.state.dashboard === 4 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
-                        {this.state.dashboard === 5 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
-                        {this.state.dashboard === 6 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
+                        {this.state.dashboard === 6 ? <div style={{
+                                                            textAlign:'center', 
+                                                            paddingTop: '10%',
+                                                            fontSize: '4vh',
+                                                            fontWeight: 300,
+                                                            color: '#e88eae'}}
+                                                            >
+                                                        Missing Source Data File</div> : null}
                         {this.state.dashboard === 7 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
                         {this.state.dashboard === 8 ? <TableauDashboard dashboardIndex={this.state.dashboard} /> : null}
                     </div>
+                    :
+                    null
                 }
             </div>
         );

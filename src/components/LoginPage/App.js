@@ -7,9 +7,9 @@ import LockIcon from '@material-ui/icons/Lock';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import NavigationIcon from '@material-ui/icons/Navigation';
+import Typography from '@material-ui/core/Typography';
 
 import Snackbar from '../Common/SnackbarComponent';
-var GLOBAL = require('../../globals');
 
 const styles = theme => ({
     button: {
@@ -50,8 +50,7 @@ class App extends Component {
     }
 
     handleClick() {
-        GLOBAL.USERNAME = this.state.username;
-        if (this.state.username === 'demo' && this.state.password === '1234') {
+        if (UserValidation(this.state.username, this.state.password)) {
             this.setState({
                 isLogin: true,
                 usernameValid: true,
@@ -72,6 +71,12 @@ class App extends Component {
     }
 
     handleChange = (e) => {
+        if (e.target.value.length > 0) {
+            this.setState({
+                [e.target.id + 'Valid']: true
+            })
+        }
+
         this.setState({
             [e.target.id]: e.target.value
         })
@@ -79,7 +84,11 @@ class App extends Component {
 
     handleLogout() {
         this.setState({
-            isLogin: false
+            isLogin: false,
+            username: '',
+            password: '',
+            usernameValid: true,
+            passwordValid: true,
         })
     }
 
@@ -97,12 +106,13 @@ class App extends Component {
                     direction='column'
                     justify='center'
                 >
-                    <Snackbar open={this.state.open} message="Wrong Username or Password"/>
+                    <Snackbar open={this.state.open} message="Wrong Username or Password" />
 
                     <Grid item>
                         <img src={require('../../images/elogow.png')} style={{ width: '250px' }} alt="eLogo" />
+                        <Typography component="h1" style={{color:"#37474f", fontSize:'24px', top:'-35px', position: 'relative'}}>Data Analytics Platform</Typography>
                     </Grid>
-                    <div style={{ top: '35vh', position: 'absolute', color: '#455a64' }}>eCloudValley x Data Solution System</div>
+                    
                     <Grid item>
                         <div className={classes.margin}>
                             <Grid container spacing={8} alignItems="flex-end">
@@ -149,6 +159,19 @@ class App extends Component {
                 </Grid>
         );
     }
+}
+
+function UserValidation(username, password) {
+    if (username === 'rachel' && password === 'ecvpsdatateam') {
+        return true
+    }
+    if (username === 'samuel' && password === 'ecvpsdatateam') {
+        return true
+    }
+    if (username === 'alex' && password === 'ecvpsdatateam') {
+        return true
+    }
+    return false
 }
 
 export default withStyles(styles)(App);

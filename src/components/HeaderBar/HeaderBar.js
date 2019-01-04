@@ -12,7 +12,6 @@ import Hidden from '@material-ui/core/Hidden';
 import Divider from '@material-ui/core/Divider';
 import MenuIcon from '@material-ui/icons/Menu';
 import Button from '@material-ui/core/Button';
-import Tooltip from '@material-ui/core/Tooltip';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 import { connect } from 'react-redux';
@@ -55,6 +54,27 @@ const styles = theme => ({
     },
     flex: {
         flex: 1,
+    },
+    logoutButton: {
+        width: '40px',
+        marginLeft: '20px',
+        color: '#FFFFFF',
+        border: '2px solid #4CAF50',
+        textTransform: 'none'
+    },
+    uploadButton: {
+        [theme.breakpoints.up('lg')]: {
+            width: '160px',
+            marginLeft: '20px',
+        },
+        color: '#FFFFFF',
+        border: '2px solid #f8bbd0',
+        textTransform: 'none'
+    },
+    rightIcon: {
+        [theme.breakpoints.up('md')]: {
+            marginLeft: theme.spacing.unit,
+        },
     }
 });
 
@@ -139,20 +159,21 @@ class HeaderBar extends React.Component {
                         <img src={require('../../images/elogo.png')} style={{ height: '40px' }} alt="eLogo" />
 
                         <Hidden smDown>
-                            <div style={{ color: '#ffffff', marginLeft: '20px', }}>eCloudValley x Data Solution System</div>
+                            <div style={{ color: '#ffffff', marginLeft: '20px', }}>Data Analytics Platform</div>
                         </Hidden>
 
                         <Typography className={classes.flex} />
 
                         <label htmlFor="outlined-button-file">
-                            <IconButton style={{color:"#FFFFFF"}} aria-label="Delete" className={classes.margin} onClick={this.triggerInputFile}>
-                                <Tooltip title="Upload CSV">
-                                    <CloudUploadIcon />
-                                </Tooltip>
-                            </IconButton>
+                            <Button className={classes.uploadButton} onClick={this.triggerInputFile}>
+                                <Hidden smDown>
+                                    Upload File
+                                </Hidden>
+                                <CloudUploadIcon className={classes.rightIcon} />
+                            </Button>
                         </label>
                         <input
-                            accept=".csv"
+                            accept=".csv, .xlsx"
                             style={{ display: 'none' }}
                             id="outlined-button-file"
                             type="file"
@@ -160,10 +181,9 @@ class HeaderBar extends React.Component {
                             onClick={(event) => {
                                 event.target.value = null
                             }}
-                            ref={fileInput => this.fileInput = fileInput} 
+                            ref={fileInput => this.fileInput = fileInput}
                         />
-
-                        <Button style={{ width: '40px', marginLeft: '20px', color: '#FFFFFF', border: '2px solid #4CAF50', textTransform: 'none', }} onClick={this.handleLogout}>
+                        <Button className={classes.logoutButton} onClick={this.handleLogout}>
                             Logout
                         </Button>
                     </Toolbar>
